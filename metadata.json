@@ -1,0 +1,6 @@
+{
+  "name": "SASHIO Mobile Toilets Management",
+  "description": "A management platform for mobile toilet services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
