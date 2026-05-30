@@ -32,69 +32,81 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    try {
-      const sb = getSupabase();
-      
-      // Get the session immediately on mount
-      sb.auth.getSession()
-        .then(async ({ data: { session } }) => {
+    const initAuth = async () => {
+      try {
+        const sb = getSupabase();
+        
+        // Get the session
+        const { data: { session } } = await sb.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          console.log("AuthContext: Debug - User ID:", session.user.id);
+          try {
+            const { data, error } = await sb
+              .from("profiles")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+            
+            if (error) {
+              console.error("AuthContext: Debug - Profile fetch error:", error);
+              // Even if error, we have a session, so profile is null
+            } else {
+              console.log("AuthContext: Debug - Profile fetched:", data);
+              setProfile(data ?? null);
+            }
+          } catch (e) {
+            console.error("AuthContext: Debug - Profile fetch exception:", e);
+            setProfile(null);
+          }
+        }
+        
+        setLoading(false); // Ensure loading is false after init
+
+        // Listen for future auth changes
+        const {
+          data: { subscription },
+        } = sb.auth.onAuthStateChange(async (event, session) => {
+          if (event === "INITIAL_SESSION") return;
+
           setSession(session);
           setUser(session?.user ?? null);
 
           if (session?.user) {
             try {
-              const { data, error } = await getSupabase()
+              const { data, error } = await sb
                 .from("profiles")
                 .select("*")
                 .eq("id", session.user.id)
                 .single();
               
-              if (error) throw error;
-              setProfile(data ?? null);
+              if (error) {
+                console.error("AuthContext: Debug - onAuthStateChange Profile fetch error:", error);
+              } else {
+                setProfile(data ?? null);
+              }
             } catch (e) {
+              console.error("AuthContext: Debug - onAuthStateChange Profile fetch exception:", e);
               setProfile(null);
             }
+          } else {
+            setProfile(null);
           }
-
-          setLoading(false);
-        })
-        .catch((e) => {
           setLoading(false);
         });
 
-      // Keep listening for future auth changes
-      const {
-        data: { subscription },
-      } = getSupabase().auth.onAuthStateChange(async (event, session) => {
-        if (event === "INITIAL_SESSION") return;
-
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          try {
-            const { data } = await getSupabase()
-              .from("profiles")
-              .select("*")
-              .eq("id", session.user.id)
-              .single();
-            setProfile(data ?? null);
-          } catch (e) {
-            setProfile(null);
-          }
-        } else {
-          setProfile(null);
-        }
-
+        return () => {
+          subscription.unsubscribe();
+        };
+      } catch (e) {
+        console.error("AuthContext: Auth setup error:", e);
         setLoading(false);
-      });
+      }
+    };
 
-      return () => {
-        subscription.unsubscribe();
-      };
-    } catch (e) {
-      setLoading(false);
-    }
+    initAuth();
   }, []);
 
   const signOut = async () => {
