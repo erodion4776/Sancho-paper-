@@ -14,7 +14,10 @@ export interface Booking {
   id: string;
   client_id: string;
   service_type: string;
+  location_address: string;
+  latitude?: number;
+  longitude?: number;
   status: BookingStatus;
-  location: string;
+  assigned_staff_id?: string;
   created_at: string;
 }

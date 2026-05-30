@@ -29,3 +29,31 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- Create extension for UUID
+create extension if not exists "uuid-ossp";
+
+-- Create Bookings table
+create table bookings (
+  id uuid default uuid_generate_v4() primary key,
+  client_id uuid references public.profiles(id) not null,
+  service_type text not null,
+  location_address text not null,
+  latitude double precision,
+  longitude double precision,
+  status text default 'pending' check (status in ('pending', 'assigned', 'in_progress', 'completed', 'cancelled')),
+  assigned_staff_id uuid references public.profiles(id),
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- Enable RLS
+alter table bookings enable row level security;
+
+-- Policies for bookings
+create policy "Clients can view their own bookings." on bookings for select using (auth.uid() = client_id);
+create policy "Clients can insert their own bookings." on bookings for insert with check (auth.uid() = client_id);
+create policy "Staff can view assigned bookings." on bookings for select using (auth.uid() = assigned_staff_id);
+create policy "Staff can update their assigned bookings." on bookings for update using (auth.uid() = assigned_staff_id);
+create policy "Admins can view all bookings." on bookings for select using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
+create policy "Admins can update all bookings." on bookings for update using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
+create policy "Admins can insert all bookings." on bookings for insert with check (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
