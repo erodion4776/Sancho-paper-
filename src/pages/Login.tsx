@@ -24,24 +24,24 @@ export const Login = () => {
   // Dedicated portal configurations for premium design variation
   const portalStyles = {
     client: {
-      title: "Client Portal",
-      subtitle: "Secure scheduling, live maps, & instant invoice processing.",
-      themeColor: "bg-brand-600 hover:bg-brand-700",
-      accentBg: "from-brand-900 to-indigo-900",
-      iconColor: "text-brand-400",
-      accentText: "text-brand-500"
+      title: "SASHIO Client Portal",
+      subtitle: "Book, Track and Manage Your Toilet Services",
+      themeColor: "bg-teal-600 hover:bg-teal-700",
+      accentBg: "from-teal-900 via-slate-900 to-indigo-950",
+      iconColor: "text-teal-400",
+      accentText: "text-teal-400"
     },
     staff: {
-      title: "Staff Dispatch",
-      subtitle: "Review assigned site bookings, update status, & log tasks.",
-      themeColor: "bg-amber-600 hover:bg-amber-700",
-      accentBg: "from-amber-950 to-orange-900",
-      iconColor: "text-amber-400",
-      accentText: "text-amber-500"
+      title: "SASHIO Staff Operations",
+      subtitle: "Service Delivery and Job Tracking",
+      themeColor: "bg-sky-600 hover:bg-sky-700",
+      accentBg: "from-sky-950 via-slate-900 to-blue-950",
+      iconColor: "text-sky-400",
+      accentText: "text-sky-450"
     },
     admin: {
-      title: "Admin Command",
-      subtitle: "Global operations coordinator, staff accounts, & database rules.",
+      title: "SASHIO Admin Center",
+      subtitle: "Operations, Staff and Revenue Management",
       themeColor: "bg-slate-800 hover:bg-black",
       accentBg: "from-slate-900 to-slate-950",
       iconColor: "text-slate-300",
@@ -116,8 +116,8 @@ export const Login = () => {
             <ShieldCheck className={`h-6 w-6 ${activePortal.iconColor}`} />
           </div>
           <div>
-            <h1 className="text-lg font-black tracking-tight uppercase">ApexOps Commercial</h1>
-            <p className="text-[10px] text-white/60 tracking-wider">Suite v4.2</p>
+            <h1 className="text-lg font-black tracking-tight uppercase font-sans">SASHIO</h1>
+            <p className="text-[10px] text-white/60 tracking-wider">Mobile Toilet Fleet</p>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ export const Login = () => {
             Verified Authentication
           </span>
           <h2 className="text-3xl font-black tracking-tight leading-none text-white font-sans">
-            ApexOps {activePortal.title}
+            {activePortal.title}
           </h2>
           <p className="text-sm text-slate-300 leading-relaxed">
             {activePortal.subtitle}
@@ -145,10 +145,10 @@ export const Login = () => {
           {/* Mobile Brand Header */}
           <div className="md:hidden flex items-center gap-2 mb-6">
             <div className="h-9 w-9 rounded-xl bg-slate-900 flex items-center justify-center">
-              <ShieldCheck className="h-5 w-5 text-brand-400" />
+              <ShieldCheck className="h-5 w-5 text-teal-400" />
             </div>
             <div>
-              <h2 className="text-md font-bold tracking-tight uppercase text-slate-950">ApexOps Executive</h2>
+              <h2 className="text-md font-bold tracking-tight uppercase text-slate-950">SASHIO</h2>
             </div>
           </div>
 
@@ -160,7 +160,7 @@ export const Login = () => {
               Sign Into {activePortal.title}
             </h3>
             <p className="text-xs text-slate-500">
-              Provide your authorized corporate credentials to log in.
+              Provide your authorized commercial credentials to log in.
             </p>
           </div>
 
@@ -175,7 +175,7 @@ export const Login = () => {
               <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Account Email Address</label>
               <input 
                 type="email" 
-                placeholder="developer@apexops.net" 
+                placeholder="client@sashio.com" 
                 required
                 className="w-full text-xs font-medium p-3.5 bg-white border border-slate-200 rounded-xl focus:border-slate-400 focus:bg-white transition-all outline-none" 
                 onChange={(e) => setEmail(e.target.value)} 
@@ -183,7 +183,7 @@ export const Login = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Vault Password</label>
+              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Account Password</label>
               <input 
                 type="password" 
                 placeholder="••••••••••••" 

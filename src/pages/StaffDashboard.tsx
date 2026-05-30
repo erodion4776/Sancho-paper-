@@ -1,5 +1,6 @@
 import { useBookings } from "../hooks/useBookings";
 import { useAuth } from "../context/AuthContext";
+import { ShieldCheck, LogOut, Briefcase } from "lucide-react";
 
 export const StaffDashboard = () => {
   const { user, signOut, loading: authLoading } = useAuth();
@@ -17,16 +18,40 @@ export const StaffDashboard = () => {
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Staff Dashboard</h1>
-        <button
-          onClick={signOut}
-          className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Sign Out
-        </button>
-      </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+      {/* SASHIO Staff Header */}
+      <header className="bg-slate-900 text-white py-6 px-4 md:px-8 sticky top-0 z-40 shadow-lg border-b border-white/5 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center shadow-md">
+              <Briefcase className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-md font-extrabold tracking-tight font-sans uppercase text-white">SASHIO Staff Operations</h1>
+                <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-sky-800 text-sky-200 rounded-full border border-sky-700">Crew Gateway</span>
+              </div>
+              <p className="text-xs text-slate-400">Service Delivery and Job Tracking</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-xs font-mono font-medium text-slate-400">
+              Active Crew: {user?.email}
+            </span>
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-rose-300 hover:text-white bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg transition-all"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="flex-grow max-w-4xl w-full mx-auto p-4 md:p-8">
 
       {bookings.length === 0 ? (
         <p className="text-gray-500">No bookings assigned to you yet.</p>
@@ -73,6 +98,11 @@ export const StaffDashboard = () => {
           ))}
         </div>
       )}
+      </main>
+
+      <footer className="py-6 border-t border-slate-200 bg-white text-center text-xs text-slate-400 mt-12">
+        <p>© {new Date().getFullYear()} SASHIO Mobile Toilets. Service Delivery and Job Tracking.</p>
+      </footer>
     </div>
   );
 };

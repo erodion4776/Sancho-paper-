@@ -183,8 +183,8 @@ export const ClientDashboard = () => {
     // Base system setup welcome message
     notifications.push({
       id: "net_welcome",
-      title: "Premium Client Portal Active",
-      body: `Welcome, ${profile?.full_name || "Valued Merchant"}. Your premium ₦4M corporate operations cockpit is fully synchronized via Supabase.`,
+      title: "SASHIO Client Portal Active",
+      body: `Welcome, ${profile?.full_name || "Valued Customer"}. Your SASHIO toilet services dashboard is fully synchronized via Supabase.`,
       status: 'success',
       time: 'Just now'
     });
@@ -375,10 +375,10 @@ export const ClientDashboard = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-md font-extrabold tracking-tight font-sans uppercase">ApexOps SaaS</h1>
-                <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-brand-500/20 text-brand-300 rounded-full border border-brand-500/30">Client Hub</span>
+                <h1 className="text-md font-extrabold tracking-tight font-sans uppercase">SASHIO Mobile Toilets</h1>
+                <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">SASHIO Client Portal</span>
               </div>
-              <p className="text-xs text-slate-400">Secure Commercial Service Suite</p>
+              <p className="text-xs text-slate-400">Book, Track and Manage Your Toilet Services</p>
             </div>
           </div>
           
@@ -408,17 +408,17 @@ export const ClientDashboard = () => {
             className="space-y-6"
           >
             {/* Quick Hero Banner */}
-            <div className="bg-gradient-to-r from-slate-900 via-brand-950 to-slate-950 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden border border-white/5">
-              <div className="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden border border-white/5">
+              <div className="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
               <div className="relative z-10 space-y-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-semibold border border-brand-500/30">
-                  <Sparkles className="w-3.5 h-3.5" /> Operations Cockpit Active
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-semibold border border-teal-500/30">
+                  <Sparkles className="w-3.5 h-3.5" /> Fleet Dispatch Node Active
                 </span>
                 <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                  Welcome to ApexOps, <span className="text-brand-300">{profile?.full_name || "Valued Customer"}</span>
+                  Welcome to SASHIO, <span className="text-teal-300">{profile?.full_name || "Valued Customer"}</span>
                 </h2>
                 <p className="text-sm text-slate-300 max-w-lg leading-relaxed">
-                  Monitor service agreements, schedule professional engineering visits, and confirm secure transactions locally or internationally.
+                  Request luxury mobile toilet fleet deployments, schedule premium on-site sanitation runs, view live routing metrics, and manage secure invoice payments.
                 </p>
                 <div className="pt-4 flex flex-wrap gap-2.5">
                   <button 
@@ -960,7 +960,7 @@ export const ClientDashboard = () => {
                 {profile?.full_name?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || "OP"}
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-extrabold text-slate-900">{profile?.full_name || "ApexOps Partner"}</h3>
+                <h3 className="text-base font-extrabold text-slate-900">{profile?.full_name || "SASHIO Client"}</h3>
                 <p className="text-xs text-slate-400">{user?.email}</p>
               </div>
               <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-mono font-bold uppercase border border-slate-800">
