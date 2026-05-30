@@ -3,8 +3,8 @@ import { useBookings } from '../hooks/useBookings';
 import { useAuth } from '../context/AuthContext';
 
 export const ClientDashboard = () => {
-  const { user } = useAuth();
-  const { bookings, loading, error, createBooking } = useBookings(user?.id);
+  const { user, loading: authLoading } = useAuth();
+  const { bookings, loading: bookingsLoading, error, createBooking } = useBookings(user?.id);
   const [serviceType, setServiceType] = useState('');
   const [location, setLocation] = useState('');
 
@@ -16,7 +16,9 @@ export const ClientDashboard = () => {
     setLocation('');
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  console.log("ClientDashboard:", { user, authLoading, bookingsLoading, bookings, error });
+
+  if (authLoading || bookingsLoading) return <div className="p-8">Loading... (Auth: {authLoading ? 'Yes' : 'No'}, Bookings: {bookingsLoading ? 'Yes' : 'No'})</div>;
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   return (
