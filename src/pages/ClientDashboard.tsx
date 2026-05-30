@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useBookings } from "../hooks/useBookings";
 import { useAuth } from "../context/AuthContext";
+import { MapComponent } from "../components/MapComponent";
+import { AddressAutocomplete } from "../components/AddressAutocomplete";
 
 export const ClientDashboard = () => {
   const { user, signOut, loading: authLoading } = useAuth();
@@ -13,7 +15,7 @@ export const ClientDashboard = () => {
     });
 
   const [serviceType, setServiceType] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState<{address: string, lat: number, lng: number} | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
 
@@ -26,16 +28,18 @@ export const ClientDashboard = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !location) return;
     setSubmitting(true);
     try {
       await createBooking({
         client_id: user.id,
         service_type: serviceType,
-        location_address: location,
+        location_address: location.address,
+        latitude: location.lat,
+        longitude: location.lng,
       });
       setServiceType("");
-      setLocation("");
+      setLocation(null);
     } catch (e: any) {
       alert("Failed to create booking: " + e.message);
     } finally {
@@ -88,17 +92,25 @@ export const ClientDashboard = () => {
           onChange={(e) => setServiceType(e.target.value)}
           required
         />
-        <input
-          type="text"
-          placeholder="Location Address"
-          className="w-full p-2 mb-3 border rounded"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          required
-        />
+        <label className="block mb-1 text-sm font-medium">Select Location</label>
+        <div className="mb-3">
+          <AddressAutocomplete 
+            onPlaceSelect={(address, lat, lng) => setLocation({address, lat, lng})} 
+          />
+        </div>
+        
+        {location && (
+          <div className="mb-4">
+            <MapComponent 
+              center={{ lat: location.lat, lng: location.lng }}
+              markerPosition={{ lat: location.lat, lng: location.lng }}
+            />
+          </div>
+        )}
+        
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !location}
           className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           {submitting ? "Booking..." : "Book Now"}
@@ -115,6 +127,16 @@ export const ClientDashboard = () => {
             <div key={b.id} className="p-4 bg-white rounded shadow">
               <p className="font-medium">{b.service_type}</p>
               <p className="text-sm text-gray-500">{b.location_address}</p>
+              {b.latitude && b.longitude && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${b.latitude},${b.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  View on Map
+                </a>
+              )}
               <p>
                 Status:{" "}
                 <span className="font-semibold capitalize">{b.status}</span>

@@ -36,6 +36,16 @@ export const StaffDashboard = () => {
             <div key={b.id} className="p-4 bg-white rounded shadow">
               <p className="font-medium">{b.service_type}</p>
               <p className="text-sm text-gray-500">{b.location_address}</p>
+              {b.latitude && b.longitude && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${b.latitude},${b.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  View on Map
+                </a>
+              )}
               <p>
                 Status:{" "}
                 <span className="font-semibold capitalize">{b.status}</span>
