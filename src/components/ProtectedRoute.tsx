@@ -22,10 +22,13 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
-    if (profile.role === 'admin') return <Navigate to="/admin" replace />;
-    if (profile.role === 'staff') return <Navigate to="/staff" replace />;
-    return <Navigate to="/dashboard" replace />;
+  if (allowedRoles) {
+    // If roles are restricted, we MUST have a profile to verify access
+    if (!profile || !allowedRoles.includes(profile.role)) {
+      if (profile?.role === 'admin') return <Navigate to="/admin" replace />;
+      if (profile?.role === 'staff') return <Navigate to="/staff" replace />;
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return <Outlet />;
