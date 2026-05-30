@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useBookings } from "../hooks/useBookings";
 import { useAuth } from "../context/AuthContext";
+import { ChangePassword } from "../components/ChangePassword";
 
 export const AdminDashboard = () => {
   const { signOut, loading: authLoading } = useAuth();
   const { bookings, loading: bookingsLoading, error, updateBooking } = useBookings({ role: "admin", authReady: !authLoading });
   const [staffId, setStaffId] = useState<Record<string, string>>({});
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   const handleUpdateStatus = async (id: string, status: string) => {
     await updateBooking(id, { status: status as any });
@@ -25,13 +27,27 @@ export const AdminDashboard = () => {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <button
-          onClick={signOut}
-          className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Sign Out
-        </button>
+        <div className="flex gap-2">
+            <button
+                onClick={() => setShowPasswordChange(!showPasswordChange)}
+                className="px-3 py-1 text-sm bg-blue-100 rounded hover:bg-blue-200"
+            >
+                {showPasswordChange ? 'Hide Password Change' : 'Change Password'}
+            </button>
+            <button
+            onClick={signOut}
+            className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+            >
+            Sign Out
+            </button>
+        </div>
       </div>
+
+      {showPasswordChange && (
+          <div className="mb-6">
+              <ChangePassword />
+          </div>
+      )}
 
       {bookings.length === 0 ? (
         <p className="text-gray-500">No bookings yet.</p>
