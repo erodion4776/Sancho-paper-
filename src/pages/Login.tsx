@@ -121,6 +121,23 @@ export const Login = () => {
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-950 font-sans overflow-x-hidden">
       
+      {/* Custom Styles for animated glow and styling classes */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes card-glow {
+          0%, 100% {
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.12), 0 0 5px rgba(99, 102, 241, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+          }
+          50% {
+            box-shadow: 0 0 30px rgba(20, 184, 166, 0.35), 0 0 12px rgba(99, 102, 241, 0.2);
+            border-color: rgba(20, 184, 166, 0.35);
+          }
+        }
+        .animated-card-glow {
+          animation: card-glow 6s ease-in-out infinite;
+        }
+      `}} />
+
       {/* Cinematic Background Video Element */}
       <video
         ref={videoRef}
@@ -128,15 +145,16 @@ export const Login = () => {
         loop
         muted
         playsInline
+        id="bg-video"
         className="fixed top-0 left-0 w-full h-full object-cover pointer-events-none"
-        style={{ zIndex: 1 }}
+        style={{ zIndex: 1, filter: "brightness(1.15) contrast(1.05)" }}
       >
         <source src="https://res.cloudinary.com/dz9xbqtk0/video/upload/v1780153559/3b485104-0e59-44a2-92e2-d0a021c892a7_qw1td0.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark Ambient Overlay (solid rgba(0,0,0,0.55) to satisfy specifications) */}
+      {/* Dark Ambient Overlay (Sleek light overlay to keep video prominent) */}
       <div 
-        className="fixed top-0 left-0 w-full h-full bg-black/55 pointer-events-none" 
+        className="video-overlay fixed top-0 left-0 w-full h-full bg-black/25 pointer-events-none" 
         style={{ zIndex: 2 }}
       />
 
@@ -161,21 +179,29 @@ export const Login = () => {
           <p className="text-sm font-semibold tracking-wider text-teal-400 uppercase font-mono">
             Mobile Toilet Fleet Management System
           </p>
-          <p className="text-xs text-slate-350 max-w-sm mx-auto leading-relaxed">
-            Corporate deployments, real-time tracking, and secure service management.
-          </p>
         </div>
 
         {/* Glassmorphic Login Section Card */}
-        <div className="w-full bg-slate-950/50 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-md space-y-6">
+        <div 
+          className="login-card animated-card-glow w-full rounded-2xl p-6 sm:p-8 space-y-6 transition-all duration-500"
+          style={{ 
+            background: "rgba(10, 20, 40, 0.35)", 
+            backdropFilter: "blur(8px)", 
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(255, 255, 255, 0.15)"
+          }}
+        >
           
           {/* Section title & subtitle info */}
-          <div className="space-y-1.5 border-b border-white/5 pb-4">
+          <div className="space-y-2 border-b border-white/5 pb-4">
             <h3 className="text-lg font-bold tracking-tight text-white">
               {activePortal.title}
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-350 leading-relaxed">
               {activePortal.subtitle}
+            </p>
+            <p className="text-[10px] text-teal-300/80 font-mono uppercase tracking-wider leading-relaxed mt-2.5">
+              🚚 Corporate deployments • 📍 Real-time tracking • 🔒 Secure services
             </p>
           </div>
 
