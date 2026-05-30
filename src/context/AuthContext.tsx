@@ -110,8 +110,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
-    if (!isSupabaseConfigured()) return;
-    await getSupabase().auth.signOut();
+    if (isSupabaseConfigured()) {
+      try {
+        await getSupabase().auth.signOut();
+      } catch (err) {
+        console.error("Supabase signOut error:", err);
+      }
+    }
+    setSession(null);
+    setUser(null);
     setProfile(null);
   };
 
