@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
-  const { bookings, loading: bookingsLoading, error, createBooking } = useBookings(user?.id, 'client');
+  const { bookings, loading: bookingsLoading, error, createBooking } = useBookings({ userId: user?.id, role: 'client' });
   const [serviceType, setServiceType] = useState('');
   const [location, setLocation] = useState('');
 

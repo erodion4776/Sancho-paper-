@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
-import { User, Session } from '@supabase/supabase-js';
-import { UserProfile } from '../types';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
+import { User, Session } from "@supabase/supabase-js";
+import { UserProfile } from "../types";
 
 interface AuthContextType {
   user: User | null;
@@ -25,54 +25,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  async function fetchProfile(userId: string) {
+    try {
+      const { data, error } = await getSupabase()
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      setProfile(null);
+    }
+  }
+
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setLoading(false);
       return;
     }
 
-    // Get initial session
-    getSupabase().auth.getSession().then(({ data: { session } }) => {
+    // Single source of truth: onAuthStateChange fires with INITIAL_SESSION
+    // on mount, so we don't need a separate getSession() call.
+    const {
+      data: { subscription },
+    } = getSupabase().auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
 
-    // Listen for auth changes
-    const { data: { subscription } } = getSupabase().auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        await fetchProfile(session.user.id);
       } else {
         setProfile(null);
-        setLoading(false);
       }
+
+      // Mark loading done after first event (INITIAL_SESSION or SIGNED_IN)
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  async function fetchProfile(userId: string) {
-    try {
-      const { data, error } = await getSupabase()
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const signOut = async () => {
     if (!isSupabaseConfigured()) return;

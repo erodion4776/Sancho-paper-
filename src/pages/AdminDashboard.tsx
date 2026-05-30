@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 export const AdminDashboard = () => {
   const { user } = useAuth();
-  const { bookings, loading, updateBooking } = useBookings(user?.id, 'admin');
+  const { bookings, loading, updateBooking } = useBookings({ userId: user?.id, role: 'admin' });
 
   const handleUpdateStatus = async (id: string, status: string) => {
     await updateBooking(id, { status: status as any });
