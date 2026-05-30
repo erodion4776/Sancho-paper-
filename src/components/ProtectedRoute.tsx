@@ -19,15 +19,15 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/client/login" replace />;
   }
 
   if (allowedRoles) {
     // If roles are restricted, we MUST have a profile to verify access
     if (!profile || !allowedRoles.includes(profile.role)) {
-      if (profile?.role === 'admin') return <Navigate to="/admin" replace />;
-      if (profile?.role === 'staff') return <Navigate to="/staff" replace />;
-      return <Navigate to="/dashboard" replace />;
+      if (profile?.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+      if (profile?.role === 'staff') return <Navigate to="/staff/dashboard" replace />;
+      return <Navigate to="/client/dashboard" replace />;
     }
   }
 

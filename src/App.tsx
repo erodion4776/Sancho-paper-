@@ -17,10 +17,10 @@ const RootRedirect = () => {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  if (!user) return <Navigate to="/login" replace />;
-  if (profile?.role === 'admin') return <Navigate to="/admin" replace />;
-  if (profile?.role === 'staff') return <Navigate to="/staff" replace />;
-  return <Navigate to="/dashboard" replace />;
+  if (!user) return <Navigate to="/client/login" replace />;
+  if (profile?.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+  if (profile?.role === 'staff') return <Navigate to="/staff/dashboard" replace />;
+  return <Navigate to="/client/dashboard" replace />;
 };
 
 export default function App() {
@@ -29,21 +29,24 @@ export default function App() {
       <DebugPanel />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<ClientDashboard />} />
+          {/* Client Portal */}
+          <Route path="/client/login" element={<Login />} />
+          <Route path="/client/register" element={<Register />} />
+          <Route path="/client/forgot-password" element={<ForgotPassword />} />
+          <Route element={<ProtectedRoute allowedRoles={['client']} />}>
+            <Route path="/client/dashboard" element={<ClientDashboard />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-          </Route>
-
+          {/* Staff Portal */}
+          <Route path="/staff/login" element={<Login />} />
           <Route element={<ProtectedRoute allowedRoles={['staff']} />}>
-            <Route path="/staff" element={<StaffDashboard />} />
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+          </Route>
+
+          {/* Admin Portal */}
+          <Route path="/admin/login" element={<Login />} />
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Route>
 
           <Route path="/" element={<RootRedirect />} />

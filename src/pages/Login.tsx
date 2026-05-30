@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export const Login = () => {
@@ -8,6 +8,8 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const portalName = location.pathname.split('/')[1] || 'Login';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ export const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <form onSubmit={handleLogin} className="p-8 bg-white rounded shadow-md w-96">
-        <h2 className="mb-4 text-2xl font-bold">Login</h2>
+        <h2 className="mb-4 text-2xl font-bold capitalize">{portalName} Login</h2>
         {error && <p className="mb-4 text-red-500">{error}</p>}
         <input type="email" placeholder="Email" className="w-full p-2 mb-4 border rounded" onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" className="w-full p-2 mb-4 border rounded" onChange={(e) => setPassword(e.target.value)} required />
@@ -39,9 +41,9 @@ export const Login = () => {
           {loading ? 'Logging in...' : 'Login'}
         </button>
         <div className="mt-4 text-sm text-center">
-          <Link to="/register" className="text-blue-600 hover:underline">Don't have an account? Sign Up</Link>
+          <Link to="/client/register" className="text-blue-600 hover:underline">Don't have an account? Sign Up</Link>
           <br />
-          <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</Link>
+          <Link to="/client/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</Link>
         </div>
       </form>
     </div>

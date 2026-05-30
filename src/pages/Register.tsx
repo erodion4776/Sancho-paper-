@@ -35,7 +35,7 @@ export const Register = () => {
     if (error) {
       setError(error.message);
     } else {
-      navigate("/login");
+      navigate("/client/login");
     }
     setLoading(false);
   };
@@ -88,7 +88,7 @@ export const Register = () => {
         </button>
 
         <div className="mt-4 text-sm text-center">
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/client/login" className="text-blue-600 hover:underline">
             Already have an account? Login
           </Link>
         </div>
