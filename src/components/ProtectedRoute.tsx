@@ -7,12 +7,10 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const { user, profile, loading, profileLoading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
-  // Wait for auth AND profile fetch to fully settle.
-  // Using explicit profileLoading means we never hang if profile
-  // fetch errors out (it always clears in the finally block).
-  if (loading || profileLoading) {
+  // Only block on loading — which is cleared after getSession + profile fetch
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         Loading...

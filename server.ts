@@ -5,10 +5,19 @@ import { createServer as createViteServer } from "vite";
 import { createClient } from "@supabase/supabase-js";
 import Paystack from "paystack";
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_ANON_KEY!
-);
+let supabaseClient: any = null;
+
+function getSupabase() {
+  if (!supabaseClient) {
+    const url = process.env.VITE_SUPABASE_URL;
+    const key = process.env.VITE_SUPABASE_ANON_KEY;
+    if (!url || !key) {
+      throw new Error("Supabase URL and Anon Key are required for server operations.");
+    }
+    supabaseClient = createClient(url, key);
+  }
+  return supabaseClient;
+}
 
 async function startServer() {
   const app = express();
@@ -42,7 +51,7 @@ async function startServer() {
           const { bookingId } = event.data.metadata;
           const { reference, amount } = event.data;
 
-          await supabase
+          await getSupabase()
             .from("bookings")
             .update({
               payment_status: "paid",
@@ -51,7 +60,7 @@ async function startServer() {
             })
             .eq("id", bookingId);
 
-          await supabase
+          await getSupabase()
             .from("payments")
             .update({ status: "success" })
             .eq("reference", reference);
@@ -89,7 +98,7 @@ async function startServer() {
         metadata: { bookingId },
       });
 
-      await supabase.from("payments").insert({
+      await getSupabase().from("payments").insert({
         booking_id: bookingId,
         reference: transaction.data.reference,
         amount,

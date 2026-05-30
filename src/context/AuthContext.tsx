@@ -23,23 +23,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  // Start true — we only set it false when auth + profile are both ready
   const [loading, setLoading] = useState(true);
-
-  async function fetchProfile(userId: string) {
-    try {
-      const { data, error } = await getSupabase()
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      setProfile(null);
-    }
-  }
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -47,23 +32,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // Single source of truth: onAuthStateChange fires with INITIAL_SESSION
-    // on mount, so we don't need a separate getSession() call.
-    const {
-      data: { subscription },
-    } = getSupabase().auth.onAuthStateChange(async (event, session) => {
+    // Get the session immediately on mount — this is synchronous from cache
+    // and avoids the delay of waiting for onAuthStateChange INITIAL_SESSION
+    getSupabase().auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
+        try {
+          const { data } = await getSupabase()
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+          setProfile(data ?? null);
+        } catch (e) {
+          console.error("Profile fetch error:", e);
+          setProfile(null);
+        }
       }
 
-      // Mark loading done after first event (INITIAL_SESSION or SIGNED_IN)
+      // Auth + profile both settled — clear loading
       setLoading(false);
     });
+
+    // Keep listening for future auth changes (login, logout, token refresh)
+    const { data: { subscription } } = getSupabase().auth.onAuthStateChange(
+      async (event, session) => {
+        // INITIAL_SESSION is handled by getSession() above; skip it here
+        // to avoid a double profile fetch on mount
+        if (event === "INITIAL_SESSION") return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          try {
+            const { data } = await getSupabase()
+              .from("profiles")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+            setProfile(data ?? null);
+          } catch (e) {
+            console.error("Profile fetch error:", e);
+            setProfile(null);
+          }
+        } else {
+          setProfile(null);
+        }
+
+        setLoading(false);
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
