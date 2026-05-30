@@ -3,8 +3,8 @@ import { useBookings } from "../hooks/useBookings";
 import { useAuth } from "../context/AuthContext";
 
 export const AdminDashboard = () => {
-  const { signOut } = useAuth();
-  const { bookings, loading, error, updateBooking } = useBookings({ role: "admin" });
+  const { signOut, loading: authLoading } = useAuth();
+  const { bookings, loading: bookingsLoading, error, updateBooking } = useBookings({ role: "admin", authReady: !authLoading });
   const [staffId, setStaffId] = useState<Record<string, string>>({});
 
   const handleUpdateStatus = async (id: string, status: string) => {
@@ -18,7 +18,7 @@ export const AdminDashboard = () => {
     setStaffId((prev) => ({ ...prev, [id]: "" }));
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (authLoading || bookingsLoading) return <div className="p-8">Loading...</div>;
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   return (

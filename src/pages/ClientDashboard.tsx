@@ -4,13 +4,25 @@ import { useAuth } from "../context/AuthContext";
 
 export const ClientDashboard = () => {
   const { user, signOut, loading: authLoading } = useAuth();
+
   const { bookings, loading: bookingsLoading, error, createBooking } =
-    useBookings({ role: "client", userId: user?.id });
+    useBookings({
+      role: "client",
+      userId: user?.id,
+      authReady: !authLoading, // don't fetch until auth has resolved
+    });
 
   const [serviceType, setServiceType] = useState("");
   const [location, setLocation] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
+
+  // Show loading only while auth OR an active bookings fetch is in progress
+  if (authLoading || bookingsLoading) {
+    return <div className="p-8">Loading...</div>;
+  }
+
+  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,11 +50,7 @@ export const ClientDashboard = () => {
       const res = await fetch("/api/create-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookingId,
-          amount: 5000,
-          email: user.email,
-        }),
+        body: JSON.stringify({ bookingId, amount: 5000, email: user.email }),
       });
       const data = await res.json();
       if (data.authorization_url) {
@@ -57,10 +65,6 @@ export const ClientDashboard = () => {
     }
   };
 
-  if (authLoading || bookingsLoading)
-    return <div className="p-8">Loading...</div>;
-  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
-
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
@@ -74,10 +78,7 @@ export const ClientDashboard = () => {
       </div>
 
       {/* Booking form */}
-      <form
-        onSubmit={handleSubmit}
-        className="p-4 bg-white rounded shadow mb-8"
-      >
+      <form onSubmit={handleSubmit} className="p-4 bg-white rounded shadow mb-8">
         <h2 className="text-lg font-semibold mb-3">Book a Service</h2>
         <input
           type="text"
@@ -124,7 +125,6 @@ export const ClientDashboard = () => {
                   {b.payment_status || "pending"}
                 </span>
               </p>
-
               {b.payment_status !== "paid" && (
                 <button
                   onClick={() => handlePay(b.id)}

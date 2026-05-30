@@ -1,28 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
 import { Booking, UserRole } from "../types";
 
 interface UseBookingsOptions {
   userId?: string;
   role?: UserRole;
+  /** Pass authLoading so the hook waits for auth before fetching */
+  authReady?: boolean;
 }
 
 export const useBookings = (options: UseBookingsOptions = {}) => {
-  const { userId, role } = options;
+  const { userId, role, authReady = true } = options;
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Start as false — only go true when we actually fire a request
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     if (!isSupabaseConfigured()) {
       setError("Supabase not configured");
-      setLoading(false);
       return;
     }
-
-    // Clients must have a userId; admins and staff can fetch without one
-    if (role === "client" && !userId) {
-      setLoading(false);
+    // For client/staff roles we need a userId
+    if ((role === "client" || role === "staff") && !userId) {
       return;
     }
 
@@ -40,10 +40,9 @@ export const useBookings = (options: UseBookingsOptions = {}) => {
       } else if (role === "staff" && userId) {
         query = query.eq("assigned_staff_id", userId);
       }
-      // admin: no filter — fetch all bookings
+      // admin: no filter
 
       const { data, error } = await query;
-
       if (error) throw error;
       setBookings(data || []);
     } catch (e: any) {
@@ -52,11 +51,13 @@ export const useBookings = (options: UseBookingsOptions = {}) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, role]);
 
   useEffect(() => {
+    // Wait until auth has resolved before fetching
+    if (!authReady) return;
     fetchBookings();
-  }, [userId, role]);
+  }, [fetchBookings, authReady]);
 
   const createBooking = async (
     booking: Omit<
@@ -74,7 +75,6 @@ export const useBookings = (options: UseBookingsOptions = {}) => {
       .from("bookings")
       .insert([booking])
       .select();
-
     if (error) throw error;
     await fetchBookings();
     return data;
@@ -86,7 +86,6 @@ export const useBookings = (options: UseBookingsOptions = {}) => {
       .update(updates)
       .eq("id", id)
       .select();
-
     if (error) throw error;
     await fetchBookings();
     return data;

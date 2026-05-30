@@ -2,17 +2,18 @@ import { useBookings } from "../hooks/useBookings";
 import { useAuth } from "../context/AuthContext";
 
 export const StaffDashboard = () => {
-  const { user, signOut } = useAuth();
-  const { bookings, loading, error, updateBooking } = useBookings({
+  const { user, signOut, loading: authLoading } = useAuth();
+  const { bookings, loading: bookingsLoading, error, updateBooking } = useBookings({
     role: "staff",
     userId: user?.id,
+    authReady: !authLoading
   });
 
   const handleUpdateStatus = async (id: string, status: string) => {
     await updateBooking(id, { status: status as any });
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (authLoading || bookingsLoading) return <div className="p-8">Loading...</div>;
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
 
   return (
