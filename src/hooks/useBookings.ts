@@ -2,31 +2,43 @@ import { useState, useEffect } from 'react';
 import { getSupabase } from '../lib/supabase';
 import { Booking } from '../types';
 
-export const useBookings = () => {
+export const useBookings = (userId?: string) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchBookings = async () => {
-    setLoading(true);
-    const { data, error } = await getSupabase()
-      .from('bookings')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      setError(error.message);
-    } else {
-      setBookings(data || []);
+    if (!userId) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await getSupabase()
+        .from('bookings')
+        .select('*')
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      } else {
+        setBookings(data || []);
+      }
+    } catch (e: any) {
+      console.error("Error fetching bookings:", e);
+      setError(e.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [userId]);
 
-  const createBooking = async (booking: Omit<Booking, 'id' | 'created_at' | 'status' | 'assigned_staff_id'>) => {
+  const createBooking = async (booking: Omit<Booking, 'id' | 'created_at' | 'status' | 'assigned_staff_id' | 'payment_status' | 'payment_reference' | 'amount_paid'>) => {
     const { data, error } = await getSupabase()
       .from('bookings')
       .insert([booking])

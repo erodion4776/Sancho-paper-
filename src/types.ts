@@ -18,6 +18,9 @@ export interface Booking {
   latitude?: number;
   longitude?: number;
   status: BookingStatus;
+  payment_status?: 'pending' | 'paid' | 'failed';
+  payment_reference?: string;
+  amount_paid?: number;
   assigned_staff_id?: string;
   created_at: string;
 }

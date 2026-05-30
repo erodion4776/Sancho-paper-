@@ -33,8 +33,8 @@ create trigger on_auth_user_created
 -- Create extension for UUID
 create extension if not exists "uuid-ossp";
 
--- Create Bookings table
-create table bookings (
+-- Create Bookings table if not exists
+create table if not exists bookings (
   id uuid default uuid_generate_v4() primary key,
   client_id uuid references public.profiles(id) not null,
   service_type text not null,
@@ -46,8 +46,33 @@ create table bookings (
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
+-- Add payment columns if not exist
+do $$ 
+begin 
+  if not exists (select from information_schema.columns where table_name='bookings' and column_name='payment_status') then
+    alter table bookings add column payment_status text default 'pending' check (payment_status in ('pending', 'paid', 'failed'));
+  end if;
+  if not exists (select from information_schema.columns where table_name='bookings' and column_name='payment_reference') then
+    alter table bookings add column payment_reference text;
+  end if;
+  if not exists (select from information_schema.columns where table_name='bookings' and column_name='amount_paid') then
+    alter table bookings add column amount_paid decimal(10,2);
+  end if;
+end $$;
+
+-- Create Payments table
+create table if not exists payments (
+  id uuid default uuid_generate_v4() primary key,
+  booking_id uuid references public.bookings(id) not null,
+  reference text not null unique,
+  amount decimal(10,2) not null,
+  status text not null check (status in ('pending', 'success', 'failed')),
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
 -- Enable RLS
 alter table bookings enable row level security;
+alter table payments enable row level security;
 
 -- Policies for bookings
 create policy "Clients can view their own bookings." on bookings for select using (auth.uid() = client_id);
@@ -57,3 +82,7 @@ create policy "Staff can update their assigned bookings." on bookings for update
 create policy "Admins can view all bookings." on bookings for select using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
 create policy "Admins can update all bookings." on bookings for update using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
 create policy "Admins can insert all bookings." on bookings for insert with check (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
+
+-- Policies for payments
+create policy "Clients can view their own payments." on payments for select using (exists (select 1 from bookings where bookings.id = payments.booking_id and bookings.client_id = auth.uid()));
+create policy "Admins can view all payments." on payments for select using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
