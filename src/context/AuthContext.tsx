@@ -27,48 +27,57 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("AuthContext: initializing, configured:", isSupabaseConfigured());
     if (!isSupabaseConfigured()) {
       setLoading(false);
       return;
     }
 
     try {
-      // Get the session immediately on mount — this is synchronous from cache
-      // and avoids the delay of waiting for onAuthStateChange INITIAL_SESSION
+      // Get the session immediately on mount
       getSupabase()
         .auth.getSession()
         .then(async ({ data: { session } }) => {
+          console.log("AuthContext: getSession resolved, session exists:", !!session);
           setSession(session);
           setUser(session?.user ?? null);
 
           if (session?.user) {
             try {
-              const { data } = await getSupabase()
+              console.log("AuthContext: fetching profile for user:", session.user.id);
+              const { data, error } = await getSupabase()
                 .from("profiles")
                 .select("*")
                 .eq("id", session.user.id)
                 .single();
+              
+              if (error) {
+                console.error("AuthContext: profile fetch returned error:", error);
+                throw error;
+              }
+              console.log("AuthContext: profile fetch successful");
               setProfile(data ?? null);
             } catch (e) {
-              console.error("Profile fetch error:", e);
+              console.error("AuthContext: Profile fetch error (likely table empty):", e);
               setProfile(null);
             }
           }
 
           // Auth + profile both settled — clear loading
+          console.log("AuthContext: settled from getSession");
           setLoading(false);
         })
         .catch((e) => {
-          console.error("Session fetch error:", e);
+          console.error("AuthContext: Session fetch error:", e);
           setLoading(false);
         });
 
-      // Keep listening for future auth changes (login, logout, token refresh)
+      // Keep listening for future auth changes
       const {
         data: { subscription },
       } = getSupabase().auth.onAuthStateChange(async (event, session) => {
+        console.log("AuthContext: onAuthStateChange event:", event);
         // INITIAL_SESSION is handled by getSession() above; skip it here
-        // to avoid a double profile fetch on mount
         if (event === "INITIAL_SESSION") return;
 
         setSession(session);
@@ -76,6 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (session?.user) {
           try {
+            console.log("AuthContext: fetching profile on change for user:", session.user.id);
             const { data } = await getSupabase()
               .from("profiles")
               .select("*")
@@ -83,19 +93,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               .single();
             setProfile(data ?? null);
           } catch (e) {
-            console.error("Profile fetch error:", e);
+            console.error("AuthContext: Profile fetch error on change:", e);
             setProfile(null);
           }
         } else {
           setProfile(null);
         }
 
+        console.log("AuthContext: settled from onAuthStateChange");
         setLoading(false);
       });
 
       return () => subscription.unsubscribe();
     } catch (e) {
-      console.error("Auth setup error:", e);
+      console.error("AuthContext: Auth setup error:", e);
       setLoading(false);
     }
   }, []);
