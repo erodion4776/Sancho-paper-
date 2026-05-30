@@ -40,11 +40,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const sb = getSupabase(); // This might throw if config is missing
+      const sb = getSupabase(); // Initialize Supabase client
       
       // Get the session immediately on mount
+      const timeoutId = setTimeout(() => {
+        console.warn("AuthContext: Loading timed out, forcing false");
+        setLoading(false);
+      }, 5000);
+
       sb.auth.getSession()
         .then(async ({ data: { session } }) => {
+          clearTimeout(timeoutId);
           console.log("AuthContext: getSession resolved, session exists:", !!session);
           setSession(session);
           setUser(session?.user ?? null);
@@ -75,6 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setLoading(false);
         })
         .catch((e) => {
+          clearTimeout(timeoutId);
           console.error("AuthContext: Session fetch error:", e);
           setLoading(false);
         });
@@ -111,7 +118,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading(false);
       });
 
-      return () => subscription.unsubscribe();
+      return () => {
+        subscription.unsubscribe();
+        clearTimeout(timeoutId);
+      };
     } catch (e) {
       console.error("AuthContext: Auth setup error:", e);
       setLoading(false);
