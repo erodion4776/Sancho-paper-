@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export const Login = () => {
@@ -38,6 +38,11 @@ export const Login = () => {
         <button type="submit" className="w-full p-2 text-white bg-blue-600 rounded" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        <div className="mt-4 text-sm text-center">
+          <Link to="/register" className="text-blue-600 hover:underline">Don't have an account? Sign Up</Link>
+          <br />
+          <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</Link>
+        </div>
       </form>
     </div>
   );

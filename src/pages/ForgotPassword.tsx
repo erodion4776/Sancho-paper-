@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export const ForgotPassword = () => {
@@ -34,6 +35,9 @@ export const ForgotPassword = () => {
                 {message && <p className="mb-4 text-green-500">{message}</p>}
                 <input type="email" placeholder="Email" className="w-full p-2 mb-4 border rounded" onChange={(e) => setEmail(e.target.value)} required />
                 <button type="submit" className="w-full p-2 text-white bg-blue-600 rounded">Reset Password</button>
+                <div className="mt-4 text-sm text-center">
+                    <Link to="/login" className="text-blue-600 hover:underline">Back to Login</Link>
+                </div>
             </form>
         </div>
     );

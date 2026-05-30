@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export const Register = () => {
@@ -53,6 +53,9 @@ export const Register = () => {
         <button type="submit" className="w-full p-2 text-white bg-blue-600 rounded" disabled={loading}>
           {loading ? 'Registering...' : 'Register'}
         </button>
+        <div className="mt-4 text-sm text-center">
+          <Link to="/login" className="text-blue-600 hover:underline">Already have an account? Login</Link>
+        </div>
       </form>
     </div>
   );
