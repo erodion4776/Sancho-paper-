@@ -48,7 +48,6 @@ export const Register = () => {
         <input type="password" placeholder="Password" className="w-full p-2 mb-4 border rounded" onChange={(e) => setPassword(e.target.value)} required />
         <select className="w-full p-2 mb-4 border rounded" onChange={(e) => setRole(e.target.value as any)}>
           <option value="client">Client</option>
-          <option value="staff">Staff</option>
         </select>
         <button type="submit" className="w-full p-2 text-white bg-blue-600 rounded" disabled={loading}>
           {loading ? 'Registering...' : 'Register'}

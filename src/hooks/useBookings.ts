@@ -2,35 +2,33 @@ import { useState, useEffect } from 'react';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 import { Booking } from '../types';
 
-export const useBookings = (userId?: string) => {
+export const useBookings = (userId?: string, role?: 'client' | 'staff' | 'admin') => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchBookings = async () => {
-    console.log("Fetching bookings for userId:", userId);
     if (!isSupabaseConfigured()) {
-        console.error("Supabase not configured");
         setError("Supabase not configured");
         setLoading(false);
         return;
     }
     if (!userId) {
-      console.log("No userId, skipping fetch");
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      console.log("Calling supabase...");
-      const { data, error } = await getSupabase()
-        .from('bookings')
-        .select('*')
-        .eq('client_id', userId)
-        .order('created_at', { ascending: false });
+      let query = getSupabase().from('bookings').select('*');
       
-      console.log("Supabase response:", { data, error });
+      if (role === 'staff') {
+        query = query.eq('assigned_staff_id', userId);
+      } else if (role !== 'admin') {
+        query = query.eq('client_id', userId);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) {
         throw error;
@@ -41,14 +39,13 @@ export const useBookings = (userId?: string) => {
       console.error("Error fetching bookings:", e);
       setError(e.message || 'An error occurred');
     } finally {
-      console.log("Fetch finished");
       setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchBookings();
-  }, [userId]);
+  }, [userId, role]);
 
   const createBooking = async (booking: Omit<Booking, 'id' | 'created_at' | 'status' | 'assigned_staff_id' | 'payment_status' | 'payment_reference' | 'amount_paid'>) => {
     const { data, error } = await getSupabase()

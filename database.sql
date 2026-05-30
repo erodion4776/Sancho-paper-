@@ -14,6 +14,7 @@ alter table profiles enable row level security;
 -- Policies for profiles
 create policy "Public profiles are viewable by everyone." on profiles for select using (true);
 create policy "Users can update their own profile." on profiles for update using (auth.uid() = id);
+create policy "Users can insert their own profile." on profiles for insert with check (auth.uid() = id);
 
 -- Function to handle new user registration
 create or replace function public.handle_new_user()
