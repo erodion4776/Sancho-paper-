@@ -1,5 +1,5 @@
 -- Create Profiles table
-create table profiles (
+create table if not exists profiles (
   id uuid references auth.users on delete cascade primary key,
   email text,
   full_name text,
@@ -12,8 +12,13 @@ create table profiles (
 alter table profiles enable row level security;
 
 -- Policies for profiles
+drop policy if exists "Public profiles are viewable by everyone." on profiles;
 create policy "Public profiles are viewable by everyone." on profiles for select using (true);
+
+drop policy if exists "Users can update their own profile." on profiles;
 create policy "Users can update their own profile." on profiles for update using (auth.uid() = id);
+
+drop policy if exists "Users can insert their own profile." on profiles;
 create policy "Users can insert their own profile." on profiles for insert with check (auth.uid() = id);
 
 -- Function to handle new user registration
@@ -27,6 +32,7 @@ end;
 $$ language plpgsql security definer;
 
 -- Trigger to create profile
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
@@ -76,14 +82,30 @@ alter table bookings enable row level security;
 alter table payments enable row level security;
 
 -- Policies for bookings
+drop policy if exists "Clients can view their own bookings." on bookings;
 create policy "Clients can view their own bookings." on bookings for select using (auth.uid() = client_id);
+
+drop policy if exists "Clients can insert their own bookings." on bookings;
 create policy "Clients can insert their own bookings." on bookings for insert with check (auth.uid() = client_id);
+
+drop policy if exists "Staff can view assigned bookings." on bookings;
 create policy "Staff can view assigned bookings." on bookings for select using (auth.uid() = assigned_staff_id);
+
+drop policy if exists "Staff can update their assigned bookings." on bookings;
 create policy "Staff can update their assigned bookings." on bookings for update using (auth.uid() = assigned_staff_id);
+
+drop policy if exists "Admins can view all bookings." on bookings;
 create policy "Admins can view all bookings." on bookings for select using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
+
+drop policy if exists "Admins can update all bookings." on bookings;
 create policy "Admins can update all bookings." on bookings for update using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
+
+drop policy if exists "Admins can insert all bookings." on bookings;
 create policy "Admins can insert all bookings." on bookings for insert with check (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));
 
 -- Policies for payments
+drop policy if exists "Clients can view their own payments." on payments;
 create policy "Clients can view their own payments." on payments for select using (exists (select 1 from bookings where bookings.id = payments.booking_id and bookings.client_id = auth.uid()));
+
+drop policy if exists "Admins can view all payments." on payments;
 create policy "Admins can view all payments." on payments for select using (exists (select 1 from profiles where id = auth.uid() and role = 'admin'));

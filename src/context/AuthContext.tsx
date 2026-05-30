@@ -27,6 +27,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("AuthContext: loading state changed to", loading);
+  }, [loading]);
+
+  useEffect(() => {
     console.log("AuthContext: initializing, configured:", isSupabaseConfigured());
     console.log("AuthContext: VITE_SUPABASE_URL:", import.meta.env.VITE_SUPABASE_URL);
     if (!isSupabaseConfigured()) {
