@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { DebugPanel } from './components/DebugPanel';
 import { Login } from './pages/Login';
 import { AdminLogin } from './pages/AdminLogin';
 import { Register } from './pages/Register';
@@ -25,6 +26,7 @@ const RootRedirect = () => {
 export default function App() {
   return (
     <AuthProvider>
+      <DebugPanel />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

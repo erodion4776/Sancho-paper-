@@ -28,15 +28,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     console.log("AuthContext: initializing, configured:", isSupabaseConfigured());
+    console.log("AuthContext: VITE_SUPABASE_URL:", import.meta.env.VITE_SUPABASE_URL);
     if (!isSupabaseConfigured()) {
+      console.error("AuthContext: Supabase is NOT configured. Check .env variables.");
       setLoading(false);
       return;
     }
 
     try {
+      const sb = getSupabase(); // This might throw if config is missing
+      
       // Get the session immediately on mount
-      getSupabase()
-        .auth.getSession()
+      sb.auth.getSession()
         .then(async ({ data: { session } }) => {
           console.log("AuthContext: getSession resolved, session exists:", !!session);
           setSession(session);
