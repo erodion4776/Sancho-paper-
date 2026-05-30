@@ -32,33 +32,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // Get the session immediately on mount — this is synchronous from cache
-    // and avoids the delay of waiting for onAuthStateChange INITIAL_SESSION
-    getSupabase().auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    try {
+      // Get the session immediately on mount — this is synchronous from cache
+      // and avoids the delay of waiting for onAuthStateChange INITIAL_SESSION
+      getSupabase()
+        .auth.getSession()
+        .then(async ({ data: { session } }) => {
+          setSession(session);
+          setUser(session?.user ?? null);
 
-      if (session?.user) {
-        try {
-          const { data } = await getSupabase()
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-          setProfile(data ?? null);
-        } catch (e) {
-          console.error("Profile fetch error:", e);
-          setProfile(null);
-        }
-      }
+          if (session?.user) {
+            try {
+              const { data } = await getSupabase()
+                .from("profiles")
+                .select("*")
+                .eq("id", session.user.id)
+                .single();
+              setProfile(data ?? null);
+            } catch (e) {
+              console.error("Profile fetch error:", e);
+              setProfile(null);
+            }
+          }
 
-      // Auth + profile both settled — clear loading
-      setLoading(false);
-    });
+          // Auth + profile both settled — clear loading
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.error("Session fetch error:", e);
+          setLoading(false);
+        });
 
-    // Keep listening for future auth changes (login, logout, token refresh)
-    const { data: { subscription } } = getSupabase().auth.onAuthStateChange(
-      async (event, session) => {
+      // Keep listening for future auth changes (login, logout, token refresh)
+      const {
+        data: { subscription },
+      } = getSupabase().auth.onAuthStateChange(async (event, session) => {
         // INITIAL_SESSION is handled by getSession() above; skip it here
         // to avoid a double profile fetch on mount
         if (event === "INITIAL_SESSION") return;
@@ -83,10 +91,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         setLoading(false);
-      }
-    );
+      });
 
-    return () => subscription.unsubscribe();
+      return () => subscription.unsubscribe();
+    } catch (e) {
+      console.error("Auth setup error:", e);
+      setLoading(false);
+    }
   }, []);
 
   const signOut = async () => {
