@@ -39,24 +39,24 @@ export const Login = () => {
   // Dedicated portal configurations for premium design variation
   const portalStyles = {
     client: {
-      title: "SASHIO Client Portal",
-      subtitle: "Book, Track and Manage Your Toilet Services",
+      title: "Sign in to your SASHIO Client Portal",
+      subtitle: "Access your dashboard to book, track, and manage services securely.",
       themeColor: "bg-teal-500 hover:bg-teal-600 shadow-teal-500/20 focus:ring-teal-500/30",
       accentText: "text-teal-400 font-bold",
       accentBorder: "border-teal-500/30",
       tagline: "Corporate Fleet Deployments"
     },
     staff: {
-      title: "SASHIO Staff Operations",
-      subtitle: "Service Delivery and Job Tracking",
+      title: "Sign in to your SASHIO Staff Portal",
+      subtitle: "Access your dispatcher workspace to view assigned jobs and update statuses.",
       themeColor: "bg-sky-500 hover:bg-sky-600 shadow-sky-500/20 focus:ring-sky-500/30",
       accentText: "text-sky-400 font-bold",
       accentBorder: "border-sky-500/30",
       tagline: "On-Site Sanitation Operations"
     },
     admin: {
-      title: "SASHIO Admin Center",
-      subtitle: "Operations, Staff and Revenue Management",
+      title: "Sign in to your SASHIO Admin Dashboard",
+      subtitle: "Access the global control console to coordinate operations and billing.",
       themeColor: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20 focus:ring-indigo-500/30",
       accentText: "text-indigo-400 font-bold",
       accentBorder: "border-indigo-500/30",
@@ -119,7 +119,7 @@ export const Login = () => {
   }
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 bg-slate-950 font-sans overflow-x-hidden">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-950 font-sans overflow-x-hidden">
       
       {/* Cinematic Background Video Element */}
       <video
@@ -140,87 +140,81 @@ export const Login = () => {
         style={{ zIndex: 2 }}
       />
 
-      {/* Glassmorphic Login Layout Wrapper */}
-      <div className="relative w-full max-w-lg mx-auto" style={{ zIndex: 10 }}>
+      {/* Core Container wrapper with proper padding & width constraints */}
+      <div className="relative w-full max-w-md mx-auto flex flex-col gap-6" style={{ zIndex: 10 }}>
         
         {/* Glow ambient effects */}
-        <div className="absolute -top-12 -left-12 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-16 -left-16 w-56 h-56 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* The Card */}
-        <div className="w-full bg-slate-950/65 border border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl space-y-8">
-          
-          {/* Header Branding Panel */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-white/5 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/15 flex items-center justify-center shadow-lg backdrop-blur-md">
-                <ShieldCheck className="h-6 w-6 text-teal-400 animate-pulse" />
-              </div>
-              <div>
-                <h1 className="text-lg font-black tracking-tight text-white uppercase font-sans">SASHIO</h1>
-                <p className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">Mobile Toilet Fleet</p>
-              </div>
-            </div>
-            
-            <div className={`px-2.5 py-1 rounded-md text-[9px] font-mono font-bold uppercase tracking-widest border self-start sm:self-auto ${activePortal.accentBorder} ${activePortal.accentText} bg-white/5`}>
+        {/* Global Brand Header Section */}
+        <div className="text-center space-y-2 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md mb-2">
+            <ShieldCheck className="h-4 w-4 text-teal-400 animate-pulse" />
+            <span className="text-[10px] text-teal-300 font-mono tracking-widest uppercase font-bold">
               {activePortal.tagline}
-            </div>
+            </span>
           </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-white uppercase font-sans">
+            SASHIO
+          </h1>
+          <p className="text-sm font-semibold tracking-wider text-teal-400 uppercase font-mono">
+            Mobile Toilet Fleet Management System
+          </p>
+          <p className="text-xs text-slate-350 max-w-sm mx-auto leading-relaxed">
+            Corporate deployments, real-time tracking, and secure service management.
+          </p>
+        </div>
 
-          {/* Form Explainer text */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
-              <span className={`text-[10px] uppercase tracking-widest font-bold ${activePortal.accentText}`}>
-                Secure Gateway Protocol
-              </span>
-            </div>
-            <h3 className="text-2xl font-extrabold tracking-tight text-white capitalize">
-              Sign Into {activePortal.title}
+        {/* Glassmorphic Login Section Card */}
+        <div className="w-full bg-slate-950/50 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-md space-y-6">
+          
+          {/* Section title & subtitle info */}
+          <div className="space-y-1.5 border-b border-white/5 pb-4">
+            <h3 className="text-lg font-bold tracking-tight text-white">
+              {activePortal.title}
             </h3>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-slate-300 leading-relaxed">
               {activePortal.subtitle}
             </p>
           </div>
 
           {/* Error Message Panel */}
           {error && (
-            <div className="p-3.5 bg-red-500/10 border border-red-500/25 rounded-xl text-red-200 text-xs font-medium leading-relaxed">
+            <div className="p-3 bg-red-500/15 border border-red-500/30 rounded-xl text-red-200 text-xs font-medium leading-relaxed">
               ⚠️ {error}
             </div>
           )}
 
-          {/* Form logic */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          {/* Input Form Fields */}
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-widest">
+              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                 Account Email Address
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                 <input 
                   type="email" 
-                  placeholder="client@sashio.com" 
+                  placeholder="Enter your email address" 
                   required
-                  className="w-full text-xs font-semibold pl-10 pr-4 py-3.5 bg-white/5 hover:bg-white/10 focus:bg-white/10 text-white border border-white/10 focus:border-teal-400 rounded-xl transition-all outline-none" 
+                  className="w-full text-xs font-semibold pl-10 pr-4 py-3 bg-white/5 hover:bg-white/10 focus:bg-white/10 text-white border border-white/10 focus:border-teal-400 rounded-xl transition-all outline-none" 
                   onChange={(e) => setEmail(e.target.value)} 
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-widest">
-                  Account Password
-                </label>
-              </div>
+              <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                Account Password
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                 <input 
                   type="password" 
-                  placeholder="••••••••••••" 
+                  placeholder="Enter your password" 
                   required
-                  className="w-full text-xs font-semibold pl-10 pr-4 py-3.5 bg-white/5 hover:bg-white/10 focus:bg-white/10 text-white border border-white/10 focus:border-teal-400 rounded-xl transition-all outline-none" 
+                  className="w-full text-xs font-semibold pl-10 pr-4 py-3 bg-white/5 hover:bg-white/10 focus:bg-white/10 text-white border border-white/10 focus:border-teal-400 rounded-xl transition-all outline-none" 
                   onChange={(e) => setPassword(e.target.value)} 
                 />
               </div>
@@ -242,56 +236,57 @@ export const Login = () => {
             </button>
           </form>
 
-          {/* Links Section */}
-          <div className="pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          {/* Secondary Links bar */}
+          <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-3 text-xs text-slate-400">
             {portalType === 'client' ? (
               <>
                 <Link to="/client/register" className="text-teal-400 font-bold hover:text-teal-300 transition-all hover:underline flex items-center gap-1">
-                  Don't have an account? Sign Up <ChevronRight className="w-3.5 h-3.5" />
+                  Don’t have an account? Sign Up <ChevronRight className="w-3 h-3" />
                 </Link>
-                <Link to="/client/forgot-password" className="text-slate-400 hover:text-slate-350 hover:underline">
+                <Link to="/client/forgot-password" className="text-slate-400 hover:text-indigo-300 transition-colors hover:underline">
                   Forgot Password?
                 </Link>
               </>
             ) : portalType === 'staff' ? (
               <span className="text-[10px] text-slate-400 leading-tight">
-                Staff registration is restricted. Contact network administrator for credential assignments.
+                Staff registration is restricted. Contact corporate administrator.
               </span>
             ) : (
               <span className="text-[10px] text-slate-400 leading-tight">
-                Root access terminal keys registered. System changes are fully logged in logs.
+                Root access terminal keys registered. System changes are audited.
               </span>
             )}
           </div>
 
-          {/* Portal Quick-Switcher Options */}
-          <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/15 space-y-3">
-            <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-500" /> Switch Portal Preview Node:
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <Link 
-                to="/client/login" 
-                className={`text-[10px] text-center p-2 rounded-lg border transition-all ${portalType === 'client' ? 'bg-teal-500/10 border-teal-500/30 text-teal-300 font-bold' : 'bg-white/5 hover:bg-white/10 border-white/5 text-slate-300'}`}
-              >
-                Client Box
-              </Link>
-              <Link 
-                to="/staff/login" 
-                className={`text-[10px] text-center p-2 rounded-lg border transition-all ${portalType === 'staff' ? 'bg-sky-500/10 border-sky-500/30 text-sky-300 font-bold' : 'bg-white/5 hover:bg-white/10 border-white/5 text-slate-300'}`}
-              >
-                Staff Node
-              </Link>
-              <Link 
-                to="/admin/login" 
-                className={`text-[10px] text-center p-2 rounded-lg border transition-all ${portalType === 'admin' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-300 font-bold' : 'bg-white/5 hover:bg-white/10 border-white/5 text-slate-300'}`}
-              >
-                Admin Root
-              </Link>
-            </div>
-          </div>
-
         </div>
+
+        {/* Portal Switch Section (Styled as sleek horizontal glass controls below the main login card) */}
+        <div className="p-3 bg-white/[0.03] border border-white/10 rounded-2xl flex flex-col gap-2">
+          <p className="text-[9px] uppercase font-bold text-slate-400 tracking-widest text-center">
+            Switch System Portal
+          </p>
+          <div className="grid grid-cols-3 gap-1 px-1">
+            <Link 
+              to="/client/login" 
+              className={`text-[10px] text-center py-1.5 rounded-lg border transition-all ${portalType === 'client' ? 'bg-teal-500/15 border-teal-500/40 text-teal-300 font-bold' : 'bg-transparent hover:bg-white/5 border-transparent text-slate-400'}`}
+            >
+              Client Portal
+            </Link>
+            <Link 
+              to="/staff/login" 
+              className={`text-[10px] text-center py-1.5 rounded-lg border transition-all ${portalType === 'staff' ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-bold' : 'bg-transparent hover:bg-white/5 border-transparent text-slate-400'}`}
+            >
+              Staff Portal
+            </Link>
+            <Link 
+              to="/admin/login" 
+              className={`text-[10px] text-center py-1.5 rounded-lg border transition-all ${portalType === 'admin' ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300 font-bold' : 'bg-transparent hover:bg-white/5 border-transparent text-slate-400'}`}
+            >
+              Admin Dashboard
+            </Link>
+          </div>
+        </div>
+
       </div>
 
     </div>
